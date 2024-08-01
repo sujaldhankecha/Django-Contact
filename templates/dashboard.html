@@ -1,0 +1,75 @@
+<html>
+<head>
+    <title>User Contact</title>
+    <style>
+        ul{
+
+        }
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            {#padding: 10px;#}
+            {#margin : 20px;#}
+        }
+    </style>
+</head>
+<body>
+<div>
+    <ul>
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'addcontact' %}">Add Contact</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+            <li><a href="{% url 'register' %}">Registration</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+    </ul>
+</div>
+<h1>All Contact </h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Index</th>
+        <th>Firstname</th>
+        <th>Lastname</th>
+        <th>Mobile</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Action1</th>
+        <th>Action2</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.firstname }}</td>
+            <td>{{ item.lastname }}</td>
+            <td>{{ item.mobile }}</td>
+            <td>{{ item.email }}</td>
+            <td>{{ item.address }}</td>
+            <td><a href="{% url 'editcontact' item.no %}">Edit</a></td>
+            <td>
+                <form action="{% url 'deletecontact' item.no %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div>
+{% if messages %}
+{% for message in messages %}
+    <small>{{ message }}</small>
+{% endfor %}
+{% endif %}
+</div>
+</body>
+</html>

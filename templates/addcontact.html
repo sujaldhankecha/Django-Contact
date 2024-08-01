@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>addcontact</title>
+
+</head>
+<body>
+<form action="" method="post" novalidate>
+    {% csrf_token %}
+    {% for fm in form %}
+        {{ fm.label_tag }}{{ fm }}{{ fm.errors|striptags }}<br> <br>
+    {% endfor %}
+{#    {{ form.as_p }}#}
+    <input type="submit" value="Add">
+</form>
+{% comment %}{% if messages %}
+    {% for message in messages %}
+        <small {% if messages.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</small>
+    {% endfor %}
+{% endif %}{% endcomment %}
+</body>
+</html>

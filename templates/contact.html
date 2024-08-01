@@ -1,0 +1,18 @@
+<html>
+<head>
+    <title>User Contact</title>
+</head>
+<body>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+{% if messages %}
+    {% for message in messages %}
+        <small {% if messages.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</small>
+    {% endfor %}
+{% endif %}
+</body>
+</html> 
