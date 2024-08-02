@@ -3,6 +3,6 @@ from .models import Contact
 
 
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('firstname','lastname','mobile','email','address')#
+    list_display = ('user','firstname','lastname','mobile','email','address')#
 
 admin.site.register(Contact,ContactAdmin)

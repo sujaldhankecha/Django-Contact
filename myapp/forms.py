@@ -11,10 +11,12 @@ class RegisterForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name', 'email']
         labels = {'email': 'Email', 'username': 'Username'}
 
+
 class ContactForm(forms.ModelForm):
-     class Meta:
+    class Meta:
         model = Contact
-        fields = ['firstname', 'lastname', 'mobile', 'email','address']
+        fields = '__all__'
+        exclude = ['user']
         # widgets = {'firstname':forms.TextInput(attrs={'class':'form-control'}),
         #            'lastname':forms.TextInput(attrs={'class':'form-control'}),
         #            'mobile':forms.TextInput(attrs={'class':'form-control'}),
