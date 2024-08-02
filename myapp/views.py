@@ -37,28 +37,6 @@ def login(request):
     return render(request, "login.html", {'form': fm})
 
 
-# def contact(request):
-#     if request.user.is_authenticated:
-#         if request.method == 'POST':
-#             fm = ContactForm(request.POST)
-#             if fm.is_valid():
-#                 firstname = fm.cleaned_data['firstname']
-#                 lastname = fm.cleaned_data['lastname']
-#                 mobile = fm.cleaned_data['mobile']
-#                 email = fm.cleaned_data['email']
-#                 address = fm.cleaned_data['address']
-#                 cnt = Contact.objects.create(firstname=firstname, lastname=lastname, mobile=mobile, email=email,
-#                                              address=address)
-#                 cnt.save()
-#                 messages.success(request, 'Your contact save successfully')
-#             return redirect('dashboard')
-#         else:
-#             fm = ContactForm()
-#             return render(request, 'contact.html', {'form': fm})
-#     else:
-#         return redirect('login')
-
-
 def dashboard(request):
     if request.user.is_authenticated:
         list = Contact.objects.filter(user=request.user)
@@ -68,23 +46,26 @@ def dashboard(request):
 
 
 def addcontact(request):
-    # if request.user.is_authenticated:
     if request.method == 'POST':
         fm = ContactForm(request.POST)
         if fm.is_valid():
-            data = fm.save()
-            ct = Contact.objects.get(id=data.id)
-            ct.user = request.user
-            ct.save()
+            # data = fm.save()
+            # ct = Contact.objects.get(id=data.id)
+            # ct.user = request.user
+            # ct.save()
+            Contact.objects.create(
+                user=request.user,
+                firstname=fm.cleaned_data['firstname'],
+                lastname=fm.cleaned_data['lastname'],
+                mobile=fm.cleaned_data['mobile'],
+                email=fm.cleaned_data['email'],
+                address=fm.cleaned_data['address'],
+            )
             messages.success(request, 'Contact added!')
             return redirect('dashboard')
     else:
         fm = ContactForm()
         return render(request, 'addcontact.html', {'form': fm})
-
-
-# else:
-#     return redirect('login')
 
 
 def editcontact(request, id):
