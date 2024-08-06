@@ -1,0 +1,52 @@
+<html>
+<head>
+    <title>User request</title>
+</head>
+<body>
+<h3>which user contact details you need ?</h3>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Request</th>
+    </tr>
+
+    {% for item in user %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.username }}</td>
+            <td>{{ item.email }}</td>
+            <td><a href="{% url 'sendrequest' item.id %}">Send request</a></td>
+{#            <td><a href="{% url 'acceptrequest' item.id %}">Accept request</a></td>#}
+        </tr>
+    {% endfor %}
+</table>
+
+{% if messages %}
+    {% for msg in messages %}
+        {{ msg }}
+    {% endfor %}
+{% endif %}
+</body>
+<br>
+<br>
+{% if user_request %}
+    <table border="1">
+        <tr>
+            <th>Request Sender</th>
+            <th>Request Receiver</th>
+            <th>Accept Request</th>
+        </tr>
+        {% for item in user_request %}
+        <tr>
+            <td>{{ item.request_sender }}</td>
+            <td>{{ item.request_receiver }}</td>
+            <td>{{ item.accept_request }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+</html>
+

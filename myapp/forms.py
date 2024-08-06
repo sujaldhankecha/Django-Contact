@@ -10,6 +10,7 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
         labels = {'email': 'Email', 'username': 'Username'}
+        # widgets = {'email': forms.EmailInput(attrs={'placeholder': 'Email'})}
 
 
 class ContactForm(forms.ModelForm):
@@ -23,3 +24,4 @@ class ContactForm(forms.ModelForm):
         #            'email':forms.TextInput(attrs={'class':'form-control'}),
         #            'address':forms.TextInput(attrs={'class':'form-control'}),
         #            }
+

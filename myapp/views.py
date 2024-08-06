@@ -1,9 +1,10 @@
-from django.shortcuts import render, HttpResponseRedirect, redirect
-from myapp.forms import RegisterForm, ContactForm
 from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from .models import Contact, User
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, redirect
+
+from myapp.forms import RegisterForm, ContactForm
+from .models import Contact, User, Request
 
 
 # Create your views here.
@@ -53,7 +54,17 @@ def addcontact(request):
             # ct = Contact.objects.get(id=data.id)
             # ct.user = request.user
             # ct.save()
-            Contact.objects.create(
+
+            # Contact.objects.create(
+            #     user=request.user,
+            #     firstname=fm.cleaned_data['firstname'],
+            #     lastname=fm.cleaned_data['lastname'],
+            #     mobile=fm.cleaned_data['mobile'],
+            #     email=fm.cleaned_data['email'],
+            #     address=fm.cleaned_data['address'],
+            # )
+
+            contact = Contact(
                 user=request.user,
                 firstname=fm.cleaned_data['firstname'],
                 lastname=fm.cleaned_data['lastname'],
@@ -61,6 +72,8 @@ def addcontact(request):
                 email=fm.cleaned_data['email'],
                 address=fm.cleaned_data['address'],
             )
+            contact.save()
+
             messages.success(request, 'Contact added!')
             return redirect('dashboard')
     else:
@@ -100,3 +113,24 @@ def deletecontact(request, id):
 def logout(request):
     auth_logout(request)
     return redirect('dashboard')
+
+
+def request_user(request):
+    user = User.objects.exclude(id=request.user.id)
+    user_request = Request.objects.all()
+    return render(request, 'request.html', {'user': user,'user_request': user_request})
+
+
+def sendrequest(request, id):
+        sender = request.user
+        receiver = User.objects.get(id=id)
+        Request.objects.create(request_sender=sender, request_receiver=receiver)
+        messages.success(request, 'Your request sent successfully')
+        return redirect('request_user')
+
+def acceptrequest(request, id):
+    request = Request.objects.get(id=id)
+    request.accept_request = 'true'
+    request.save()
+    user = User.objects.exclude(id=request.user.id)
+    return render(request, 'request.html', {'user': user})
