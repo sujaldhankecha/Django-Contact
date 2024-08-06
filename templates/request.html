@@ -19,7 +19,6 @@
             <td>{{ item.username }}</td>
             <td>{{ item.email }}</td>
             <td><a href="{% url 'sendrequest' item.id %}">Send request</a></td>
-{#            <td><a href="{% url 'acceptrequest' item.id %}">Accept request</a></td>#}
         </tr>
     {% endfor %}
 </table>
@@ -32,21 +31,28 @@
 </body>
 <br>
 <br>
+
+
 {% if user_request %}
     <table border="1">
         <tr>
             <th>Request Sender</th>
             <th>Request Receiver</th>
             <th>Accept Request</th>
+            <th>Request</th>
         </tr>
         {% for item in user_request %}
         <tr>
             <td>{{ item.request_sender }}</td>
             <td>{{ item.request_receiver }}</td>
             <td>{{ item.accept_request }}</td>
+            <td><a href="{% url 'acceptrequest' item.id %}">Accept Request</a> </td>
         </tr>
         {% endfor %}
     </table>
 {% endif %}
+<br>
+<br>
+
 </html>
 

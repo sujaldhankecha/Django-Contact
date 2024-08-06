@@ -1,4 +1,4 @@
-<html>
+<html lang="">
 <head>
     <title>User Contact</title>
     <style>
@@ -34,7 +34,6 @@
             <th>Address</th>
             <th>Action1</th>
             <th>Action2</th>
-
         </tr>
         </thead>
         <tbody>
@@ -60,6 +59,7 @@
 {% else %}
     <h2>No any Contact</h2>
 {% endif %}
+<br>
 <div>
     {% if messages %}
         {% for message in messages %}
@@ -67,5 +67,29 @@
         {% endfor %}
     {% endif %}
 </div>
+<br>
+{% if show_contact %}
+   <table border="1">
+        <tr>
+            <th>Index</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Mobile</th>
+            <th>Email</th>
+            <th>Address</th>
+        </tr>
+        {% for item in show_contact %}
+        <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.firstname }}</td>
+                <td>{{ item.lastname }}</td>
+                <td>{{ item.mobile }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.address }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
 </body>
 </html>

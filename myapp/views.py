@@ -39,9 +39,14 @@ def login(request):
 
 
 def dashboard(request):
+    show_contact = ""
     if request.user.is_authenticated:
         list = Contact.objects.filter(user=request.user)
-        return render(request, 'dashboard.html', {'list': list})
+        if Request.objects.filter(accept_request=True, request_sender=request.user.id).all():
+            request_data = Request.objects.filter(accept_request=True,
+                                                  request_sender=request.user.id).values_list("request_receiver", flat=True)
+            show_contact = Contact.objects.filter(user__in=request_data)
+        return render(request, 'dashboard.html', {'list': list, 'show_contact': show_contact})
     else:
         return redirect('login')
 
@@ -117,20 +122,36 @@ def logout(request):
 
 def request_user(request):
     user = User.objects.exclude(id=request.user.id)
-    user_request = Request.objects.all()
-    return render(request, 'request.html', {'user': user,'user_request': user_request})
+    user_request = Request.objects.exclude(request_sender=request.user.id)
+    return render(request, 'request.html', {'user': user, 'user_request': user_request})
 
 
 def sendrequest(request, id):
-        sender = request.user
-        receiver = User.objects.get(id=id)
+    sender = request.user
+    receiver = User.objects.get(id=id)
+    if Request.objects.filter(request_sender=sender, request_receiver=receiver):
+        messages.success(request, 'Your request was already sent')
+        print(request.user.id)
+    else:
         Request.objects.create(request_sender=sender, request_receiver=receiver)
         messages.success(request, 'Your request sent successfully')
-        return redirect('request_user')
+    return redirect('request_user')
+
 
 def acceptrequest(request, id):
-    request = Request.objects.get(id=id)
-    request.accept_request = 'true'
-    request.save()
-    user = User.objects.exclude(id=request.user.id)
-    return render(request, 'request.html', {'user': user})
+    r = Request.objects.get(id=id)
+    # print(r.request_sender)
+    # print(r.request_receiver)
+    # print(request.user)
+    if r.request_receiver == request.user:
+        r.accept_request = True
+        r.save()
+        messages.success(request, 'Your request has been accepted')
+        # if Request.objects.filter(accept_request=True, ):
+        #     show_contact = Contact.objects.filter(user=request.user)
+        #     return render(request, 'request.html', {'show_contact': show_contact})
+    else:
+        messages.success(request, 'You cannot accept request')
+    return redirect('request_user')
+    # user = User.objects.exclude(id=request.user.id)
+    # return render(request, 'request.html', {'user': user})
