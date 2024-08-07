@@ -14,5 +14,6 @@ urlpatterns = [
     path('deletecontact/<int:id>/', views.deletecontact, name='deletecontact'),
     path('editcontact/<int:id>/', views.editcontact, name='editcontact'),
     path('user_logout/',views.user_logout,name='user_logout'),
+    path('sendmail/<int:id>/',views.sendmail,name='sendmail'),
 
 ]

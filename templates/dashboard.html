@@ -34,6 +34,7 @@
             <th>Address</th>
             <th>Action1</th>
             <th>Action2</th>
+            <th>Action3</th>
         </tr>
         </thead>
         <tbody>
@@ -52,6 +53,7 @@
                         <button type="submit">Delete</button>
                     </form>
                 </td>
+                <td><a href="{% url 'sendmail' item.id%}">Send Mail</a></td>
             </tr>
         {% endfor %}
         </tbody>

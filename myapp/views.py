@@ -3,10 +3,10 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
-
 from myapp.forms import RegisterForm, ContactForm
 from .models import Contact, User, Request
-
+from django.conf import settings
+from django.core.mail import send_mail
 
 # Create your views here.
 
@@ -15,8 +15,22 @@ def register(request):
     if request.method == 'POST':
         fm = RegisterForm(request.POST)
         if fm.is_valid():
-            fm.save()
+            # fm.save()
+            user = User(
+                username=fm.cleaned_data['username'],
+                first_name=fm.cleaned_data['first_name'],
+                last_name=fm.cleaned_data['last_name'],
+                email=fm.cleaned_data['email'],
+            )
+            user.save()
             messages.success(request, 'Registration successful!')
+            subject = 'welcome to CONTACT app'
+            msg = f'Hi {user.username}! Thank you for registering!'
+            print(msg,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [user.email,]
+            print(recipient_list,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            send_mail(subject, msg, email_from, recipient_list)
             return redirect('login')
     else:
         fm = RegisterForm()
@@ -168,3 +182,14 @@ def declinerequest(request, id):
     else:
         messages.success(request, 'You cannot decline request')
     return redirect('request_user')
+
+def sendmail(request,id):
+    s = Contact.objects.get(id=id)
+    print(s.email,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    subject = 'Sending email'
+    msg = f'Thank you for sending your email to {s.user.email}'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [s.email,]
+    send_mail(subject, msg, email_from, recipient_list)
+    messages.success(request, 'Your email has been sent successfully')
+    return redirect('dashboard')
