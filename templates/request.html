@@ -40,6 +40,7 @@
             <th>Request Receiver</th>
             <th>Accept Request</th>
             <th>Request</th>
+            <th>Request</th>
         </tr>
         {% for item in user_request %}
         <tr>
@@ -47,6 +48,7 @@
             <td>{{ item.request_receiver }}</td>
             <td>{{ item.accept_request }}</td>
             <td><a href="{% url 'acceptrequest' item.id %}">Accept Request</a> </td>
+            <td><a href="{% url 'declinerequest' item.id %}">Decline Request</a> </td>
         </tr>
         {% endfor %}
     </table>

@@ -1,5 +1,6 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 
@@ -23,6 +24,9 @@ def register(request):
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
     if request.method == 'POST':
         fm = AuthenticationForm(request=request, data=request.POST)
         if fm.is_valid():
@@ -33,22 +37,26 @@ def login(request):
                 auth_login(request, user)
                 messages.success(request, 'You are now logged in!')
                 return redirect('dashboard')
+            else:
+                messages.error(request, 'Invalid username or password.')
     else:
         fm = AuthenticationForm()
+
     return render(request, "login.html", {'form': fm})
 
 
 def dashboard(request):
-    show_contact = ""
-    if request.user.is_authenticated:
-        list = Contact.objects.filter(user=request.user)
-        if Request.objects.filter(accept_request=True, request_sender=request.user.id).all():
-            request_data = Request.objects.filter(accept_request=True,
-                                                  request_sender=request.user.id).values_list("request_receiver", flat=True)
-            show_contact = Contact.objects.filter(user__in=request_data)
-        return render(request, 'dashboard.html', {'list': list, 'show_contact': show_contact})
-    else:
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    show_contact = ""
+    list = Contact.objects.filter(user=request.user)
+    if Request.objects.filter(accept_request=True, request_sender=request.user.id).exists():
+        request_data = Request.objects.filter(accept_request=True, request_sender=request.user.id).values_list(
+            "request_receiver", flat=True)
+        show_contact = Contact.objects.filter(user__in=request_data)
+
+    return render(request, 'dashboard.html', {'list': list, 'show_contact': show_contact})
 
 
 def addcontact(request):
@@ -115,14 +123,16 @@ def deletecontact(request, id):
         return redirect('login')
 
 
-def logout(request):
-    auth_logout(request)
-    return redirect('dashboard')
+def user_logout(request):
+        if request.user.is_authenticated:
+            auth_logout(request)
+            messages.success(request, 'You have been logged out successfully.')
+        return redirect('login')
 
 
 def request_user(request):
     user = User.objects.exclude(id=request.user.id)
-    user_request = Request.objects.exclude(request_sender=request.user.id)
+    user_request = Request.objects.filter(request_receiver=request.user.id)
     return render(request, 'request.html', {'user': user, 'user_request': user_request})
 
 
@@ -140,18 +150,21 @@ def sendrequest(request, id):
 
 def acceptrequest(request, id):
     r = Request.objects.get(id=id)
-    # print(r.request_sender)
-    # print(r.request_receiver)
-    # print(request.user)
     if r.request_receiver == request.user:
         r.accept_request = True
         r.save()
         messages.success(request, 'Your request has been accepted')
-        # if Request.objects.filter(accept_request=True, ):
-        #     show_contact = Contact.objects.filter(user=request.user)
-        #     return render(request, 'request.html', {'show_contact': show_contact})
     else:
         messages.success(request, 'You cannot accept request')
     return redirect('request_user')
-    # user = User.objects.exclude(id=request.user.id)
-    # return render(request, 'request.html', {'user': user})
+
+
+def declinerequest(request, id):
+    r = Request.objects.get(id=id)
+    if r.request_receiver == request.user:
+        r.accept_request = False
+        r.save()
+        messages.success(request, 'Your request has been declined')
+    else:
+        messages.success(request, 'You cannot decline request')
+    return redirect('request_user')

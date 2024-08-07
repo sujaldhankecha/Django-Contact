@@ -8,10 +8,11 @@ urlpatterns = [
     path('request_user/', views.request_user, name='request_user'),
     path('sendrequest/<int:id>/',views.sendrequest,name='sendrequest'),
     path('acceptrequest/<int:id>/',views.acceptrequest,name='acceptrequest'),
+    path('declinerequest/<int:id>/',views.declinerequest,name='declinerequest'),
     # path('contact/', views.contact, name='contact'),
     path('addcontact/', views.addcontact, name='addcontact'),
     path('deletecontact/<int:id>/', views.deletecontact, name='deletecontact'),
     path('editcontact/<int:id>/', views.editcontact, name='editcontact'),
-    path('logout/',views.logout,name='logout'),
+    path('user_logout/',views.user_logout,name='user_logout'),
 
 ]
