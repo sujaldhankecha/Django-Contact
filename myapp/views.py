@@ -8,10 +8,13 @@ from .models import Contact, User, Request
 from django.conf import settings
 from django.core.mail import send_mail
 
+
 # Create your views here.
 
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     if request.method == 'POST':
         fm = RegisterForm(request.POST)
         if fm.is_valid():
@@ -24,13 +27,13 @@ def register(request):
             )
             user.save()
             messages.success(request, 'Registration successful!')
-            subject = 'welcome to CONTACT app'
-            msg = f'Hi {user.username}! Thank you for registering!'
-            print(msg,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [user.email,]
-            print(recipient_list,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            send_mail(subject, msg, email_from, recipient_list)
+            # subject = 'welcome to CONTACT app'
+            # msg = f'Hi {user.username}! Thank you for registering!'
+            # print(msg,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            # email_from = settings.EMAIL_HOST_USER
+            # recipient_list = [user.email,]
+            # print(recipient_list,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            # send_mail(subject, msg, email_from, recipient_list)
             return redirect('login')
     else:
         fm = RegisterForm()
@@ -62,13 +65,19 @@ def login(request):
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
-    show_contact = ""
-    list = Contact.objects.filter(user=request.user)
-    if Request.objects.filter(accept_request=True, request_sender=request.user.id).exists():
-        request_data = Request.objects.filter(accept_request=True, request_sender=request.user.id).values_list(
+    filter = request.GET.get('myname',None)
+    if filter is not None:
+        a= Contact.objects.filter(firstname=filter)
+        print(a,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+        return render(request, 'dashboard.html', {'a': a})
+        # return render(request, 'dashboard.html', {'filter': filter})
+    else:
+        show_contact = ""
+        list = Contact.objects.filter(user=request.user)
+        if Request.objects.filter(accept_request=True, request_sender=request.user.id).exists():
+            request_data = Request.objects.filter(accept_request=True, request_sender=request.user.id).values_list(
             "request_receiver", flat=True)
-        show_contact = Contact.objects.filter(user__in=request_data)
+            show_contact = Contact.objects.filter(user__in=request_data)
 
     return render(request, 'dashboard.html', {'list': list, 'show_contact': show_contact})
 
@@ -138,10 +147,10 @@ def deletecontact(request, id):
 
 
 def user_logout(request):
-        if request.user.is_authenticated:
-            auth_logout(request)
-            messages.success(request, 'You have been logged out successfully.')
-        return redirect('login')
+    if request.user.is_authenticated:
+        auth_logout(request)
+        messages.success(request, 'You have been logged out successfully.')
+    return redirect('login')
 
 
 def request_user(request):
@@ -183,13 +192,14 @@ def declinerequest(request, id):
         messages.success(request, 'You cannot decline request')
     return redirect('request_user')
 
-def sendmail(request,id):
+
+def sendmail(request, id):
     s = Contact.objects.get(id=id)
-    print(s.email,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(s.email, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     subject = 'Sending email'
     msg = f'Thank you for sending your email to {s.user.email}'
     email_from = settings.EMAIL_HOST_USER
-    recipient_list = [s.email,]
+    recipient_list = [s.email, ]
     send_mail(subject, msg, email_from, recipient_list)
     messages.success(request, 'Your email has been sent successfully')
     return redirect('dashboard')

@@ -22,8 +22,16 @@
     </ul>
 </div>
 <h1>All Contact </h1>
+<div>
+    <form action="">
+        <input type="text" name="myname" id="myInput" placeholder="Search for names.." title="Type in a name">
+        <button type="submit" class="btn btn-info btn-sm mt-1 mb-1">Filter</button>
+    </form>
+</div>
+<br>
+
 {% if list %}
-    <table border="1">
+        <table border="1">
         <thead>
         <tr>
             <th>Index</th>
@@ -53,7 +61,43 @@
                         <button type="submit">Delete</button>
                     </form>
                 </td>
-                <td><a href="{% url 'sendmail' item.id%}">Send Mail</a></td>
+                <td><a href="{% url 'sendmail' item.id %}">Send Mail</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% elif a %}    
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Index</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Mobile</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Action1</th>
+            <th>Action2</th>
+            <th>Action3</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in a %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.firstname }}</td>
+                <td>{{ item.lastname }}</td>
+                <td>{{ item.mobile }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.address }}</td>
+                <td><a href="{% url 'editcontact' item.id %}">Edit</a></td>
+                <td>
+                    <form action="{% url 'deletecontact' item.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+                <td><a href="{% url 'sendmail' item.id %}">Send Mail</a></td>
             </tr>
         {% endfor %}
         </tbody>
@@ -61,6 +105,48 @@
 {% else %}
     <h2>No any Contact</h2>
 {% endif %}
+ 
+
+{##}
+{#{% if a %}#}
+{#    <table border="1">#}
+{#        <thead>#}
+{#        <tr>#}
+{#            <th>Index</th>#}
+{#            <th>Firstname</th>#}
+{#            <th>Lastname</th>#}
+{#            <th>Mobile</th>#}
+{#            <th>Email</th>#}
+{#            <th>Address</th>#}
+{#            <th>Action1</th>#}
+{#            <th>Action2</th>#}
+{#            <th>Action3</th>#}
+{#        </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#        {% for item in a %}#}
+{#            <tr>#}
+{#                <td>{{ forloop.counter }}</td>#}
+{#                <td>{{ item.firstname }}</td>#}
+{#                <td>{{ item.lastname }}</td>#}
+{#                <td>{{ item.mobile }}</td>#}
+{#                <td>{{ item.email }}</td>#}
+{#                <td>{{ item.address }}</td>#}
+{#                <td><a href="{% url 'editcontact' item.id %}">Edit</a></td>#}
+{#                <td>#}
+{#                    <form action="{% url 'deletecontact' item.id %}" method="post">#}
+{#                        {% csrf_token %}#}
+{#                        <button type="submit">Delete</button>#}
+{#                    </form>#}
+{#                </td>#}
+{#                <td><a href="{% url 'sendmail' item.id %}">Send Mail</a></td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#{% else %}#}
+{#    <h2>No any Contact</h2>#}
+{#{% endif %}#}
 <br>
 <div>
     {% if messages %}
@@ -71,7 +157,7 @@
 </div>
 <br>
 {% if show_contact %}
-   <table border="1">
+    <table border="1">
         <tr>
             <th>Index</th>
             <th>Firstname</th>
@@ -81,14 +167,14 @@
             <th>Address</th>
         </tr>
         {% for item in show_contact %}
-        <tr>
+            <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ item.firstname }}</td>
                 <td>{{ item.lastname }}</td>
                 <td>{{ item.mobile }}</td>
                 <td>{{ item.email }}</td>
                 <td>{{ item.address }}</td>
-        </tr>
+            </tr>
         {% endfor %}
     </table>
 {% endif %}
