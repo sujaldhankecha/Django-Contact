@@ -11,6 +11,16 @@
         {#padding: 10px;#}{#margin : 20px;#}
         }
     </style>
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <div>
@@ -31,7 +41,7 @@
 <br>
 
 {% if list %}
-        <table border="1">
+    <table border="1">
         <thead>
         <tr>
             <th>Index</th>
@@ -66,8 +76,8 @@
         {% endfor %}
         </tbody>
     </table>
-{% elif a %}    
-    <table border="1">
+{% elif a %}
+    <table border="1" >
         <thead>
         <tr>
             <th>Index</th>
@@ -81,7 +91,7 @@
             <th>Action3</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="myTable">
         {% for item in a %}
             <tr>
                 <td>{{ forloop.counter }}</td>
@@ -105,7 +115,7 @@
 {% else %}
     <h2>No any Contact</h2>
 {% endif %}
- 
+
 
 {##}
 {#{% if a %}#}

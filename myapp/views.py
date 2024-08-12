@@ -68,9 +68,7 @@ def dashboard(request):
     filter = request.GET.get('myname',None)
     if filter is not None:
         a= Contact.objects.filter(firstname=filter)
-        print(a,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
         return render(request, 'dashboard.html', {'a': a})
-        # return render(request, 'dashboard.html', {'filter': filter})
     else:
         show_contact = ""
         list = Contact.objects.filter(user=request.user)
